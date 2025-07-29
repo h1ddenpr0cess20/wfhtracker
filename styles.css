@@ -1,0 +1,215 @@
+/*
+  Stylesheet for the Time Tracker extension popup.
+  The design is clean and minimal, taking cues from modern time‑tracking tools.
+*/
+
+/*
+  Base styles for the Time Tracker extension popup.
+  The design uses CSS custom properties to allow for an easy dark mode toggle.
+*/
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  width: 300px;
+  position: relative;
+}
+
+/* Define CSS variables for light mode */
+:root {
+  --bg-color: #f7f9fc;
+  --card-bg: #ffffff;
+  --text-color: #333333;
+  --secondary-text-color: #6b7280;
+  --primary-color: #0078d4;
+  --primary-hover: #005a9e;
+  --border-color: #e2e8f0;
+}
+
+/* Override variables when dark mode is active */
+body.dark {
+  --bg-color: #1e293b;
+  --card-bg: #0f172a;
+  --text-color: #f1f5f9;
+  --secondary-text-color: #94a3b8;
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --border-color: #374151;
+}
+
+/* Container styling */
+.container {
+  padding: 16px;
+  background-color: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+/* Title styling */
+.title {
+  font-size: 20px;
+  margin-bottom: 12px;
+  text-align: center;
+  color: var(--text-color);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--text-color);
+  padding: 4px;
+  transition: transform 0.2s ease;
+}
+.theme-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* Timer section layout */
+.timer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-bottom: 20px;
+}
+
+/* Task input styling */
+.task-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Timer display styling */
+.timer-display {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 12px;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+/* Base button styling */
+.action-btn {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+  margin-bottom: 8px;
+}
+.primary-btn {
+  border: none;
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+.primary-btn:hover {
+  background-color: var(--primary-hover);
+}
+.secondary-btn {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+.secondary-btn:hover {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+
+/* Entries section */
+.entries-section {
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+}
+
+.section-title {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: var(--text-color);
+}
+
+.entries-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Individual entry styling */
+.entry {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+.entry:last-child {
+  border-bottom: none;
+}
+.entry-content {
+  flex: 1;
+  min-width: 0;
+}
+.entry-task {
+  font-weight: 600;
+  margin-bottom: 2px;
+  word-break: break-word;
+  color: var(--text-color);
+}
+.entry-time {
+  font-size: 14px;
+  color: var(--primary-color);
+  margin-bottom: 2px;
+}
+.entry-period {
+  font-size: 12px;
+  color: var(--secondary-text-color);
+}
+
+/* Entry actions container */
+.entry-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.entry-action-btn {
+  border: none;
+  padding: 2px 4px;
+  font-size: 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.15s ease-in-out;
+}
+.entry-action-btn.edit-btn {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+.entry-action-btn.delete-btn {
+  background-color: #ef4444; /* red tone */
+  color: #ffffff;
+}
+.entry-action-btn.resume-btn {
+  background-color: #10b981; /* green tone */
+  color: #ffffff;
+}
+.entry-action-btn:hover {
+  opacity: 0.9;
+}

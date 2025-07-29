@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Time Tracker</title>
+    <!-- Link to the popup stylesheet -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">Time Tracker</h1>
+      <!-- Theme toggle sits in the top right of the container -->
+      <button id="themeToggleBtn" class="theme-toggle" title="Toggle dark mode">🌙</button>
+
+      <div class="timer-section">
+        <input
+          type="text"
+          id="taskName"
+          class="task-input"
+          placeholder="Task name"
+          list="taskNamesList"
+        />
+        <!-- datalist for task name suggestions -->
+        <datalist id="taskNamesList"></datalist>
+        <div id="timerDisplay" class="timer-display">00:00:00</div>
+        <button id="startStopBtn" class="action-btn primary-btn">Start</button>
+        <!-- secondary button to open a larger view of the entries -->
+        <button id="openTableBtn" class="action-btn secondary-btn">Open Table</button>
+      </div>
+      <div class="entries-section">
+        <h2 class="section-title">Time Entries</h2>
+        <ul id="entriesList" class="entries-list"></ul>
+      </div>
+    </div>
+    <!-- Script that manages the timer logic -->
+    <script src="popup.js"></script>
+  </body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Time Entries</title>
+    <!-- reuse the main stylesheet -->
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Override container width for full page view */
+      html, body {
+        width: 100% !important;
+        min-height: 100vh;
+      }
+      /* Use a wider container for the full page view */
+      .container {
+        max-width: 900px;
+        margin: 32px auto;
+      }
+      /* On the entries page, remove card styling from the container */
+      body.entries-page .container {
+        background: none;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0 16px;
+        max-width: 100%;
+        margin: 0;
+      }
+      table.entries-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      table.entries-table th,
+      table.entries-table td {
+        padding: 8px 12px;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+      }
+      table.entries-table th {
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        font-weight: bold;
+      }
+      table.entries-table tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+      }
+      .table-actions {
+        display: flex;
+        gap: 4px;
+      }
+      .table-action-btn {
+        border: none;
+        padding: 4px 6px;
+        font-size: 14px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: background-color 0.15s ease-in-out;
+      }
+      .table-action-btn.edit {
+        background-color: var(--primary-color);
+        color: #ffffff;
+      }
+      .table-action-btn.delete {
+        background-color: #ef4444;
+        color: #ffffff;
+      }
+      .table-action-btn.resume {
+        background-color: #10b981;
+        color: #ffffff;
+      }
+      .table-action-btn:hover {
+        opacity: 0.9;
+      }
+      .header-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .header-actions h1 {
+        margin: 0;
+        font-size: 24px;
+        color: var(--text-color);
+      }
+    </style>
+  </head>
+  <body class="entries-page">
+    <div class="container">
+      <div class="header-actions">
+        <h1>All Time Entries</h1>
+        <button id="themeToggleBtn" class="theme-toggle" title="Toggle dark mode">🌙</button>
+      </div>
+      <table class="entries-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Task</th>
+            <th style="width: 15%;">Duration</th>
+            <th style="width: 25%;">Start</th>
+            <th style="width: 25%;">End</th>
+            <th style="width: 10%;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="entriesTableBody"></tbody>
+      </table>
+    </div>
+    <script src="entries.js"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Time Tracker",
+  "version": "1.0",
+  "description": "A simple time tracking tool reminiscent of Toggl, built as a Chrome extension.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Time Tracker"
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "permissions": [
+    "storage",
+    "tabs"
+  ]
+}
