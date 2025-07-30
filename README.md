@@ -1,7 +1,7 @@
 # WFH Tracker
 
 <p align="center">
-  <img src="logo.svg" alt="WFH Tracker Logo" width="128" height="128" />
+  <img src="assets/logo.svg" alt="WFH Tracker Logo" width="128" height="128" />
 </p>
 
 A simple time tracker extension for work-from-home jobs.
@@ -20,12 +20,27 @@ A simple time tracker extension for work-from-home jobs.
 4. View, edit, delete, or resume entries from the log.
 5. Export your log to CSV for reporting or backup.
 
-## File Overview
-- `popup.html`, `popup.js`: Main popup interface and logic
-- `entries.html`, `entries.js`: View and manage tracked entries
-- `styles.css`: Basic styling
-- `manifest.json`: Extension configuration
-- `logo.svg`: Extension and branding icon
+## Project Structure
+```
+wfhtracker/
+├── manifest.json                    # Extension configuration
+├── README.md                        # Project documentation
+├── src/                            # Source code
+│   ├── popup/                      # Main popup interface
+│   │   ├── popup.html             # Popup HTML structure
+│   │   └── popup.js               # Popup logic and functionality
+│   ├── entries/                    # Entries management page
+│   │   ├── entries.html           # Entries page HTML structure
+│   │   └── entries.js             # Entries page logic
+│   └── styles/                     # Stylesheets
+│       └── styles.css             # Main stylesheet
+└── assets/                         # Static assets
+    ├── logo.svg                   # Extension and branding logo
+    └── icons/                     # Extension icons
+        ├── icon16.png            # 16x16 icon
+        ├── icon48.png            # 48x48 icon
+        └── icon128.png           # 128x128 icon
+```
 
 ## Requirements
 - Chromium-based browser (e.g., Chrome, Edge)
