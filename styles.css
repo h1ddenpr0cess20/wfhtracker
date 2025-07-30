@@ -12,7 +12,6 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 17px;
   background-color: var(--bg-color);
   color: var(--text-color);
   width: 300px;
@@ -80,6 +79,12 @@ body.dark {
 }
 .theme-toggle:hover {
   transform: scale(1.1);
+}
+
+/* On the entries page, let the toggle sit inline to avoid overlaps */
+body.entries-page .theme-toggle {
+  position: static;
+  margin-left: 8px;
 }
 
 /* Timer section layout */
