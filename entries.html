@@ -71,6 +71,10 @@
       .table-action-btn:hover {
         opacity: 0.9;
       }
+      .group-header td {
+        background-color: var(--card-bg);
+        font-weight: bold;
+      }
       .header-actions {
         display: flex;
         justify-content: space-between;
@@ -88,7 +92,10 @@
     <div class="container">
       <div class="header-actions">
         <h1>All Time Entries</h1>
-        <button id="themeToggleBtn" class="theme-toggle" title="Toggle dark mode">🌙</button>
+        <div>
+          <button id="exportBtn" class="action-btn secondary-btn" style="width:auto;">Export CSV</button>
+          <button id="themeToggleBtn" class="theme-toggle" title="Toggle dark mode">🌙</button>
+        </div>
       </div>
       <table class="entries-table">
         <thead>

@@ -3,6 +3,9 @@
 ;(function () {
   const tableBody = document.getElementById('entriesTableBody');
   const themeToggleBtn = document.getElementById('themeToggleBtn');
+  const exportBtn = document.getElementById('exportBtn');
+
+  let autoRefreshInterval = null;
 
   /**
    * Format duration in milliseconds into HH:MM:SS.
@@ -22,9 +25,21 @@
    * Render the table rows based on the provided entries.
    * @param {Array<Object>} entries
    */
-  function renderTable(entries) {
+  function renderTable(entries, runningEntry) {
     tableBody.innerHTML = '';
-    if (!entries || entries.length === 0) {
+    let allEntries = entries.slice();
+    if (runningEntry) {
+      // Add a pseudo-entry for the running timer
+      allEntries.unshift({
+        id: runningEntry.id,
+        taskName: runningEntry.taskName,
+        startTime: runningEntry.startTime,
+        endTime: Date.now(),
+        duration: Date.now() - runningEntry.startTime,
+        isRunning: true
+      });
+    }
+    if (!allEntries || allEntries.length === 0) {
       const tr = document.createElement('tr');
       const td = document.createElement('td');
       td.colSpan = 5;
@@ -33,62 +48,81 @@
       tableBody.appendChild(tr);
       return;
     }
-    entries.forEach((entry) => {
-      const tr = document.createElement('tr');
-
-      const taskTd = document.createElement('td');
-      taskTd.textContent = entry.taskName;
-
-      const durationTd = document.createElement('td');
-      durationTd.textContent = formatTime(entry.duration);
-
-      const startTd = document.createElement('td');
-      const startDate = new Date(entry.startTime);
-      startTd.textContent = startDate.toLocaleString();
-
-      const endTd = document.createElement('td');
-      const endDate = new Date(entry.endTime);
-      endTd.textContent = endDate.toLocaleString();
-
-      const actionsTd = document.createElement('td');
-      const actionsDiv = document.createElement('div');
-      actionsDiv.className = 'table-actions';
-
-      // Resume button
-      const resumeBtn = document.createElement('button');
-      resumeBtn.className = 'table-action-btn resume';
-      resumeBtn.textContent = 'Resume';
-      resumeBtn.addEventListener('click', () => {
-        handleResumeEntry(entry.taskName);
+    const groups = {};
+    allEntries.forEach((e) => {
+      if (!groups[e.taskName]) groups[e.taskName] = [];
+      groups[e.taskName].push(e);
+    });
+    Object.keys(groups).forEach((task) => {
+      const groupEntries = groups[task];
+      const total = groupEntries.reduce((acc, e) => acc + e.duration, 0);
+      const headerTr = document.createElement('tr');
+      headerTr.className = 'group-header';
+      const taskHeaderTd = document.createElement('td');
+      taskHeaderTd.textContent = task;
+      const durationHeaderTd = document.createElement('td');
+      durationHeaderTd.textContent = formatTime(total);
+      const emptyStartTd = document.createElement('td');
+      const emptyEndTd = document.createElement('td');
+      const emptyActionsTd = document.createElement('td');
+      headerTr.appendChild(taskHeaderTd);
+      headerTr.appendChild(durationHeaderTd);
+      headerTr.appendChild(emptyStartTd);
+      headerTr.appendChild(emptyEndTd);
+      headerTr.appendChild(emptyActionsTd);
+      tableBody.appendChild(headerTr);
+      groupEntries.forEach((entry) => {
+        const tr = document.createElement('tr');
+        const taskTd = document.createElement('td');
+        taskTd.textContent = entry.taskName;
+        const durationTd = document.createElement('td');
+        durationTd.textContent = formatTime(entry.duration);
+        if (entry.isRunning) durationTd.classList.add('live-timer');
+        const startTd = document.createElement('td');
+        const startDate = new Date(entry.startTime);
+        startTd.textContent = startDate.toLocaleString();
+        const endTd = document.createElement('td');
+        if (entry.isRunning) {
+          endTd.textContent = '...';
+        } else {
+          const endDate = new Date(entry.endTime);
+          endTd.textContent = endDate.toLocaleString();
+        }
+        const actionsTd = document.createElement('td');
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'table-actions';
+        // Resume button
+        const resumeBtn = document.createElement('button');
+        resumeBtn.className = 'table-action-btn resume';
+        resumeBtn.textContent = 'Resume';
+        resumeBtn.addEventListener('click', () => {
+          handleResumeEntry(entry.taskName);
+        });
+        // Edit button
+        const editBtn = document.createElement('button');
+        editBtn.className = 'table-action-btn edit';
+        editBtn.textContent = 'Edit';
+        editBtn.addEventListener('click', () => {
+          handleEditEntry(entry.id);
+        });
+        // Delete button
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'table-action-btn delete';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', () => {
+          handleDeleteEntry(entry.id);
+        });
+        actionsDiv.appendChild(resumeBtn);
+        actionsDiv.appendChild(editBtn);
+        actionsDiv.appendChild(deleteBtn);
+        actionsTd.appendChild(actionsDiv);
+        tr.appendChild(taskTd);
+        tr.appendChild(durationTd);
+        tr.appendChild(startTd);
+        tr.appendChild(endTd);
+        tr.appendChild(actionsTd);
+        tableBody.appendChild(tr);
       });
-
-      // Edit button
-      const editBtn = document.createElement('button');
-      editBtn.className = 'table-action-btn edit';
-      editBtn.textContent = 'Edit';
-      editBtn.addEventListener('click', () => {
-        handleEditEntry(entry.id);
-      });
-
-      // Delete button
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'table-action-btn delete';
-      deleteBtn.textContent = 'Delete';
-      deleteBtn.addEventListener('click', () => {
-        handleDeleteEntry(entry.id);
-      });
-
-      actionsDiv.appendChild(resumeBtn);
-      actionsDiv.appendChild(editBtn);
-      actionsDiv.appendChild(deleteBtn);
-      actionsTd.appendChild(actionsDiv);
-
-      tr.appendChild(taskTd);
-      tr.appendChild(durationTd);
-      tr.appendChild(startTd);
-      tr.appendChild(endTd);
-      tr.appendChild(actionsTd);
-      tableBody.appendChild(tr);
     });
   }
 
@@ -112,10 +146,11 @@
    * Load entries and theme state from storage.
    */
   function loadState() {
-    chrome.storage.local.get(['timeEntries', 'darkMode'], (data) => {
+    chrome.storage.local.get(['timeEntries', 'darkMode', 'runningEntry'], (data) => {
       const entries = data.timeEntries || [];
       const dark = data.darkMode || false;
-      renderTable(entries);
+      const runningEntry = data.runningEntry || null;
+      renderTable(entries, runningEntry);
       if (dark) {
         document.body.classList.add('dark');
         themeToggleBtn.textContent = '☀️';
@@ -131,6 +166,7 @@
    * @param {number|string} id
    */
   function handleDeleteEntry(id) {
+    if (!confirm('Delete this entry?')) return;
     chrome.storage.local.get('timeEntries', (data) => {
       let entries = data.timeEntries || [];
       const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
@@ -243,7 +279,50 @@
     chrome.storage.local.set({ darkMode: newDark });
   }
 
+  /**
+   * Export entries as a CSV file and trigger download.
+   */
+  function exportCSV() {
+    chrome.storage.local.get('timeEntries', (data) => {
+      const entries = data.timeEntries || [];
+      if (!entries.length) return;
+      const lines = ['Task,Start,End,Duration'];
+      entries.forEach((e) => {
+        const start = new Date(e.startTime).toISOString();
+        const end = new Date(e.endTime).toISOString();
+        const task = e.taskName.replace(/"/g, '""');
+        lines.push(`"${task}",${start},${end},${formatTime(e.duration)}`);
+      });
+      const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'wfh-entries.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+  }
+
+  function startAutoRefresh() {
+    if (autoRefreshInterval) return;
+    autoRefreshInterval = setInterval(loadState, 1000);
+  }
+
+  function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+      clearInterval(autoRefreshInterval);
+      autoRefreshInterval = null;
+    }
+  }
+
   // Event listeners
-  document.addEventListener('DOMContentLoaded', loadState);
+  document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    startAutoRefresh();
+  });
+  window.addEventListener('beforeunload', stopAutoRefresh);
   themeToggleBtn.addEventListener('click', toggleTheme);
+  if (exportBtn) exportBtn.addEventListener('click', exportCSV);
 })();

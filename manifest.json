@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Time Tracker",
+  "name": "WFH Tracker",
   "version": "1.0",
   "description": "A simple time tracking tool.",
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Time Tracker"
+    "default_title": "WFH Tracker"
   },
   "icons": {
     "16": "icon16.png",

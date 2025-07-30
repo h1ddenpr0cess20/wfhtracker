@@ -1,5 +1,5 @@
 // popup.js
-// Handles the user interface and storage for the Time Tracker extension.
+// Handles the user interface and storage for the WFH Tracker extension.
 ;(function () {
   const taskInput = document.getElementById('taskName');
   const timerDisplay = document.getElementById('timerDisplay');
@@ -9,6 +9,7 @@
   const entriesList = document.getElementById('entriesList');
 
   let timerInterval = null;
+  let autoRefreshInterval = null;
 
   /**
    * Convert a duration in milliseconds into a HH:MM:SS string.
@@ -44,44 +45,53 @@
    * Adds action buttons to each entry for editing, deleting and resuming.
    * @param {Array<Object>} entries Array of time entry objects.
    */
-  function renderEntries(entries) {
+  function renderEntries(entries, runningEntry) {
     entriesList.innerHTML = '';
-    if (!entries || entries.length === 0) {
+    let allEntries = entries.slice();
+    if (runningEntry) {
+      allEntries.unshift({
+        id: runningEntry.id,
+        taskName: runningEntry.taskName,
+        startTime: runningEntry.startTime,
+        endTime: Date.now(),
+        duration: Date.now() - runningEntry.startTime,
+        isRunning: true
+      });
+    }
+    if (!allEntries || allEntries.length === 0) {
       const li = document.createElement('li');
       li.className = 'entry';
       li.textContent = 'No entries yet.';
       entriesList.appendChild(li);
       return;
     }
-    entries.forEach((entry) => {
+    allEntries.forEach((entry) => {
       const li = document.createElement('li');
       li.className = 'entry';
       li.dataset.entryId = String(entry.id);
-
       const contentDiv = document.createElement('div');
       contentDiv.className = 'entry-content';
-
       const taskDiv = document.createElement('div');
       taskDiv.className = 'entry-task';
       taskDiv.textContent = entry.taskName;
-
       const timeDiv = document.createElement('div');
       timeDiv.className = 'entry-time';
       timeDiv.textContent = formatTime(entry.duration);
-
+      if (entry.isRunning) timeDiv.classList.add('live-timer');
       const periodDiv = document.createElement('div');
       periodDiv.className = 'entry-period';
       const startDate = new Date(entry.startTime);
-      const endDate = new Date(entry.endTime);
-      periodDiv.textContent = `${startDate.toLocaleString()} – ${endDate.toLocaleString()}`;
-
+      if (entry.isRunning) {
+        periodDiv.textContent = `${startDate.toLocaleString()} – ...`;
+      } else {
+        const endDate = new Date(entry.endTime);
+        periodDiv.textContent = `${startDate.toLocaleString()} – ${endDate.toLocaleString()}`;
+      }
       contentDiv.appendChild(taskDiv);
       contentDiv.appendChild(timeDiv);
       contentDiv.appendChild(periodDiv);
-
       const actionsDiv = document.createElement('div');
       actionsDiv.className = 'entry-actions';
-
       // Resume button
       const resumeBtn = document.createElement('button');
       resumeBtn.className = 'entry-action-btn resume-btn';
@@ -90,7 +100,6 @@
         e.stopPropagation();
         handleResumeEntry(entry.taskName);
       });
-
       // Edit button
       const editBtn = document.createElement('button');
       editBtn.className = 'entry-action-btn edit-btn';
@@ -99,7 +108,6 @@
         e.stopPropagation();
         handleEditEntry(entry.id);
       });
-
       // Delete button
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'entry-action-btn delete-btn';
@@ -108,11 +116,9 @@
         e.stopPropagation();
         handleDeleteEntry(entry.id);
       });
-
       actionsDiv.appendChild(resumeBtn);
       actionsDiv.appendChild(editBtn);
       actionsDiv.appendChild(deleteBtn);
-
       li.appendChild(contentDiv);
       li.appendChild(actionsDiv);
       entriesList.appendChild(li);
@@ -137,8 +143,7 @@
       const timeEntries = data.timeEntries || [];
       const taskNames = data.taskNames || [];
       const darkMode = data.darkMode || false;
-      // Render entries and tasks list
-      renderEntries(timeEntries);
+      renderEntries(timeEntries, runningEntry);
       updateTaskDatalist(taskNames);
       // Set dark mode
       if (darkMode) {
@@ -149,16 +154,18 @@
         if (themeToggleBtn) themeToggleBtn.textContent = '🌙';
       }
       if (runningEntry) {
-        // There is an active timer.
         startStopBtn.textContent = 'Stop';
         taskInput.value = runningEntry.taskName;
-        // Update the timer immediately and then every second.
         updateTimer(runningEntry);
+        if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => updateTimer(runningEntry), 1000);
       } else {
-        // No active timer.
         timerDisplay.textContent = '00:00:00';
         startStopBtn.textContent = 'Start';
+        if (timerInterval) {
+          clearInterval(timerInterval);
+          timerInterval = null;
+        }
       }
     });
   }
@@ -270,6 +277,7 @@
    * @param {number|string} id
    */
   function handleDeleteEntry(id) {
+    if (!confirm('Delete this entry?')) return;
     chrome.storage.local.get('timeEntries', (data) => {
       let entries = data.timeEntries || [];
       const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
@@ -350,9 +358,25 @@
     chrome.tabs.create({ url });
   }
 
+  function startAutoRefresh() {
+    if (autoRefreshInterval) return;
+    autoRefreshInterval = setInterval(loadState, 1000);
+  }
+
+  function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+      clearInterval(autoRefreshInterval);
+      autoRefreshInterval = null;
+    }
+  }
+
   // Attach event listeners.
   startStopBtn.addEventListener('click', toggleTimer);
   if (openTableBtn) openTableBtn.addEventListener('click', openTable);
   if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
-  document.addEventListener('DOMContentLoaded', loadState);
+  document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    startAutoRefresh();
+  });
+  window.addEventListener('beforeunload', stopAutoRefresh);
 })();
