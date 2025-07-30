@@ -1,24 +1,29 @@
 # WFH Tracker
 
+<img src="logo.svg" alt="WFH Tracker Logo" width="128" height="128" />
+
 A simple time tracker extension for work-from-home jobs.
 
 ## Features
-- Start and stop tracking your work sessions
-- View a log of tracked entries grouped by task
-- Export your log to CSV
-- Minimal and easy-to-use interface with dark mode
-- Quickly select previously used task names from a dropdown
+- ⏱️ Start and stop tracking your work sessions
+- 📋 View a log of tracked entries grouped by task
+- 📤 Export your log to CSV
+- 🌗 Minimal and easy-to-use interface with dark mode
+- 🔄 Quickly select previously used task names from a dropdown
 
 ## How it works
-- Click the extension icon to open the popup
-- Use the buttons to start or stop tracking
-- Your entries are saved and can be viewed in the log
+1. Click the extension icon to open the popup.
+2. Enter a task name and press Start to begin tracking.
+3. Press Stop to end a session; your entry is saved automatically.
+4. View, edit, delete, or resume entries from the log.
+5. Export your log to CSV for reporting or backup.
 
-## Files
+## File Overview
 - `popup.html`, `popup.js`: Main popup interface and logic
 - `entries.html`, `entries.js`: View and manage tracked entries
 - `styles.css`: Basic styling
 - `manifest.json`: Extension configuration
+- `logo.svg`: Extension and branding icon
 
 ## Requirements
 - Chromium-based browser (e.g., Chrome, Edge)
