@@ -7,6 +7,10 @@
   const openTableBtn = document.getElementById('openTableBtn');
   const themeToggleBtn = document.getElementById('themeToggleBtn');
   const entriesList = document.getElementById('entriesList');
+  const suggestionsEl = document.getElementById('taskSuggestions');
+
+  let taskNames = [];
+  let activeSuggestion = -1;
 
   let timerInterval = null;
   let autoRefreshInterval = null;
@@ -26,17 +30,17 @@
   }
 
   /**
-   * Populate the datalist for task names.
+   * Render suggestions dropdown for task names.
    * @param {Array<string>} names
    */
-  function updateTaskDatalist(names) {
-    const list = document.getElementById('taskNamesList');
-    if (!list) return;
-    list.innerHTML = '';
+  function updateTaskSuggestions(names) {
+    if (!suggestionsEl) return;
+    suggestionsEl.innerHTML = '';
     names.forEach((name) => {
-      const option = document.createElement('option');
-      option.value = name;
-      list.appendChild(option);
+      const li = document.createElement('li');
+      li.textContent = name;
+      li.dataset.value = name;
+      suggestionsEl.appendChild(li);
     });
   }
 
@@ -141,10 +145,10 @@
     chrome.storage.local.get(['runningEntry', 'timeEntries', 'taskNames', 'darkMode'], (data) => {
       const runningEntry = data.runningEntry;
       const timeEntries = data.timeEntries || [];
-      const taskNames = data.taskNames || [];
+      taskNames = data.taskNames || [];
       const darkMode = data.darkMode || false;
       renderEntries(timeEntries, runningEntry);
-      updateTaskDatalist(taskNames);
+      updateTaskSuggestions(taskNames);
       // Set dark mode
       if (darkMode) {
         document.body.classList.add('dark');
@@ -182,16 +186,69 @@
       if (!names.includes(trimmed)) {
         names.push(trimmed);
         chrome.storage.local.set({ taskNames: names }, () => {
-          updateTaskDatalist(names);
+          taskNames = names;
+          updateTaskSuggestions(names);
         });
       }
     });
+  }
+
+  /** Show suggestions filtered by the provided text */
+  function showSuggestions(filter) {
+    if (!suggestionsEl) return;
+    const filtered = taskNames.filter((n) =>
+      !filter || n.toLowerCase().includes(filter.toLowerCase())
+    );
+    updateTaskSuggestions(filtered);
+    activeSuggestion = -1;
+    suggestionsEl.style.display = filtered.length ? 'block' : 'none';
+  }
+
+  function hideSuggestions() {
+    if (suggestionsEl) suggestionsEl.style.display = 'none';
+    activeSuggestion = -1;
+  }
+
+  function handleSuggestionClick(e) {
+    const li = e.target.closest('li');
+    if (!li) return;
+    taskInput.value = li.dataset.value || li.textContent;
+    hideSuggestions();
+  }
+
+  function updateActiveSuggestion() {
+    const items = suggestionsEl.querySelectorAll('li');
+    items.forEach((li, idx) => {
+      li.classList.toggle('active', idx === activeSuggestion);
+    });
+  }
+
+  function handleInputKeyDown(e) {
+    const items = suggestionsEl.querySelectorAll('li');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeSuggestion = (activeSuggestion + 1) % items.length;
+      updateActiveSuggestion();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeSuggestion = (activeSuggestion - 1 + items.length) % items.length;
+      updateActiveSuggestion();
+    } else if (e.key === 'Enter') {
+      if (activeSuggestion >= 0) {
+        e.preventDefault();
+        const li = items[activeSuggestion];
+        taskInput.value = li.dataset.value || li.textContent;
+        hideSuggestions();
+      }
+    }
   }
 
   /**
    * Start a new timer for the task specified in the input field.
    */
   function startTimer() {
+    hideSuggestions();
     const taskName = taskInput.value.trim();
     if (!taskName) {
       alert('Please enter a task name.');
@@ -320,6 +377,7 @@
    * @param {string} taskName
    */
   function handleResumeEntry(taskName) {
+    hideSuggestions();
     chrome.storage.local.get('runningEntry', (data) => {
       if (data.runningEntry) {
         // Stop current timer then start new one
@@ -374,6 +432,17 @@
   startStopBtn.addEventListener('click', toggleTimer);
   if (openTableBtn) openTableBtn.addEventListener('click', openTable);
   if (themeToggleBtn) themeToggleBtn.addEventListener('click', toggleTheme);
+  if (taskInput) {
+    taskInput.addEventListener('input', () => showSuggestions(taskInput.value));
+    taskInput.addEventListener('focus', () => showSuggestions(taskInput.value));
+    taskInput.addEventListener('keydown', handleInputKeyDown);
+  }
+  if (suggestionsEl) suggestionsEl.addEventListener('click', handleSuggestionClick);
+  document.addEventListener('click', (e) => {
+    if (e.target !== taskInput && !suggestionsEl.contains(e.target)) {
+      hideSuggestions();
+    }
+  });
   document.addEventListener('DOMContentLoaded', () => {
     loadState();
     startAutoRefresh();

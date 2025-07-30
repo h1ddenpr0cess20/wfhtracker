@@ -95,6 +95,11 @@ body.entries-page .theme-toggle {
   margin-bottom: 20px;
 }
 
+/* Wrapper to position the suggestions dropdown */
+.task-input-wrapper {
+  position: relative;
+}
+
 /* Task input styling */
 .task-input {
   width: 100%;
@@ -225,4 +230,31 @@ body.entries-page .theme-toggle {
 }
 .entry-action-btn:hover {
   opacity: 0.9;
+}
+
+/* Suggestions dropdown for task names */
+.task-suggestions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  max-height: 120px;
+  overflow-y: auto;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: calc(100% - 2px);
+  background-color: var(--card-bg);
+  z-index: 1000;
+  display: none;
+}
+.task-suggestions li {
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.task-suggestions li:hover,
+.task-suggestions li.active {
+  background-color: var(--primary-color);
+  color: #ffffff;
 }
