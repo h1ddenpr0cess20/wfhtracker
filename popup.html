@@ -15,15 +15,17 @@
         <button id="themeToggleBtn" class="theme-toggle" title="Toggle dark mode">🌙</button>
 
       <div class="timer-section">
-        <input
-          type="text"
-          id="taskName"
-          class="task-input"
-          placeholder="Task name"
-          autocomplete="off"
-        />
-        <!-- custom suggestions dropdown -->
-        <ul id="taskSuggestions" class="task-suggestions"></ul>
+        <div class="task-input-wrapper">
+          <input
+            type="text"
+            id="taskName"
+            class="task-input"
+            placeholder="Task name"
+            autocomplete="off"
+          />
+          <!-- custom suggestions dropdown -->
+          <ul id="taskSuggestions" class="task-suggestions"></ul>
+        </div>
         <div id="timerDisplay" class="timer-display">00:00:00</div>
         <button id="startStopBtn" class="action-btn primary-btn">Start</button>
         <!-- secondary button to open a larger view of the entries -->

@@ -95,6 +95,11 @@ body.entries-page .theme-toggle {
   margin-bottom: 20px;
 }
 
+/* Wrapper to position the suggestions dropdown */
+.task-input-wrapper {
+  position: relative;
+}
+
 /* Task input styling */
 .task-input {
   width: 100%;
