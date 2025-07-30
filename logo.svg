@@ -1,5 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <rect width="80" height="60" x="24" y="56" fill="#4F46E5" rx="8"/>
   <polygon points="16,56 64,16 112,56" fill="#6366F1"/>
-  <text x="64" y="96" font-size="28" text-anchor="middle" fill="white" font-family="Arial, Helvetica, sans-serif">WFH</text>
+  <!-- Clock face -->
+  <circle cx="64" cy="86" r="22" fill="white" stroke="#6366F1" stroke-width="3"/>
+  <!-- Clock hands -->
+  <line x1="64" y1="86" x2="64" y2="72" stroke="#4F46E5" stroke-width="3" stroke-linecap="round"/>
+  <line x1="64" y1="86" x2="78" y2="86" stroke="#4F46E5" stroke-width="3" stroke-linecap="round"/>
 </svg>
