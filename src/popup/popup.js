@@ -412,7 +412,7 @@
    * Open the big table view in a new tab.
    */
   function openTable() {
-    const url = chrome.runtime.getURL('entries.html');
+    const url = chrome.runtime.getURL('src/entries/entries.html');
     chrome.tabs.create({ url });
   }
 
