@@ -20,10 +20,10 @@
           id="taskName"
           class="task-input"
           placeholder="Task name"
-          list="taskNamesList"
+          autocomplete="off"
         />
-        <!-- datalist for task name suggestions -->
-        <datalist id="taskNamesList"></datalist>
+        <!-- custom suggestions dropdown -->
+        <ul id="taskSuggestions" class="task-suggestions"></ul>
         <div id="timerDisplay" class="timer-display">00:00:00</div>
         <button id="startStopBtn" class="action-btn primary-btn">Start</button>
         <!-- secondary button to open a larger view of the entries -->

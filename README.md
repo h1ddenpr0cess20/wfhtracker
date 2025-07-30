@@ -7,6 +7,7 @@ A simple time tracker extension for work-from-home jobs.
 - View a log of tracked entries grouped by task
 - Export your log to CSV
 - Minimal and easy-to-use interface with dark mode
+- Quickly select previously used task names from a dropdown
 
 ## How it works
 - Click the extension icon to open the popup
