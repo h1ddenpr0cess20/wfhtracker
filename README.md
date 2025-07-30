@@ -4,8 +4,9 @@ A simple time tracker extension for work-from-home jobs.
 
 ## Features
 - Start and stop tracking your work sessions
-- View a log of tracked entries
-- Minimal and easy-to-use interface
+- View a log of tracked entries grouped by task
+- Export your log to CSV
+- Minimal and easy-to-use interface with dark mode
 
 ## How it works
 - Click the extension icon to open the popup

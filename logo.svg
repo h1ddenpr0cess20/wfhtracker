@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect width="80" height="60" x="24" y="56" fill="#4F46E5" rx="8"/>
+  <polygon points="16,56 64,16 112,56" fill="#6366F1"/>
+  <text x="64" y="96" font-size="28" text-anchor="middle" fill="white" font-family="Arial, Helvetica, sans-serif">WFH</text>
+</svg>

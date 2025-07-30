@@ -1,10 +1,10 @@
 /*
-  Stylesheet for the Time Tracker extension popup.
+  Stylesheet for the WFH Tracker extension popup.
   The design is clean and minimal, taking cues from modern time‑tracking tools.
 */
 
 /*
-  Base styles for the Time Tracker extension popup.
+  Base styles for the WFH Tracker extension popup.
   The design uses CSS custom properties to allow for an easy dark mode toggle.
 */
 
@@ -12,6 +12,7 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
   background-color: var(--bg-color);
   color: var(--text-color);
   width: 300px;
@@ -47,6 +48,13 @@ body.dark {
   border-radius: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   position: relative;
+}
+
+/* Logo shown above the title */
+.logo {
+  display: block;
+  width: 48px;
+  margin: 0 auto 8px;
 }
 
 /* Title styling */

@@ -1,5 +1,5 @@
 // popup.js
-// Handles the user interface and storage for the Time Tracker extension.
+// Handles the user interface and storage for the WFH Tracker extension.
 ;(function () {
   const taskInput = document.getElementById('taskName');
   const timerDisplay = document.getElementById('timerDisplay');
@@ -270,6 +270,7 @@
    * @param {number|string} id
    */
   function handleDeleteEntry(id) {
+    if (!confirm('Delete this entry?')) return;
     chrome.storage.local.get('timeEntries', (data) => {
       let entries = data.timeEntries || [];
       const numericId = typeof id === 'string' ? parseInt(id, 10) : id;

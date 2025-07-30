@@ -3,6 +3,7 @@
 ;(function () {
   const tableBody = document.getElementById('entriesTableBody');
   const themeToggleBtn = document.getElementById('themeToggleBtn');
+  const exportBtn = document.getElementById('exportBtn');
 
   /**
    * Format duration in milliseconds into HH:MM:SS.
@@ -33,8 +34,26 @@
       tableBody.appendChild(tr);
       return;
     }
-    entries.forEach((entry) => {
-      const tr = document.createElement('tr');
+    const groups = {};
+    entries.forEach((e) => {
+      if (!groups[e.taskName]) groups[e.taskName] = [];
+      groups[e.taskName].push(e);
+    });
+
+    Object.keys(groups).forEach((task) => {
+      const groupEntries = groups[task];
+      const total = groupEntries.reduce((acc, e) => acc + e.duration, 0);
+
+      const headerTr = document.createElement('tr');
+      headerTr.className = 'group-header';
+      const headerTd = document.createElement('td');
+      headerTd.colSpan = 5;
+      headerTd.textContent = `${task} - ${formatTime(total)}`;
+      headerTr.appendChild(headerTd);
+      tableBody.appendChild(headerTr);
+
+      groupEntries.forEach((entry) => {
+        const tr = document.createElement('tr');
 
       const taskTd = document.createElement('td');
       taskTd.textContent = entry.taskName;
@@ -88,7 +107,8 @@
       tr.appendChild(startTd);
       tr.appendChild(endTd);
       tr.appendChild(actionsTd);
-      tableBody.appendChild(tr);
+        tableBody.appendChild(tr);
+      });
     });
   }
 
@@ -131,6 +151,7 @@
    * @param {number|string} id
    */
   function handleDeleteEntry(id) {
+    if (!confirm('Delete this entry?')) return;
     chrome.storage.local.get('timeEntries', (data) => {
       let entries = data.timeEntries || [];
       const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
@@ -243,7 +264,34 @@
     chrome.storage.local.set({ darkMode: newDark });
   }
 
+  /**
+   * Export entries as a CSV file and trigger download.
+   */
+  function exportCSV() {
+    chrome.storage.local.get('timeEntries', (data) => {
+      const entries = data.timeEntries || [];
+      if (!entries.length) return;
+      const lines = ['Task,Start,End,Duration'];
+      entries.forEach((e) => {
+        const start = new Date(e.startTime).toISOString();
+        const end = new Date(e.endTime).toISOString();
+        const task = e.taskName.replace(/"/g, '""');
+        lines.push(`"${task}",${start},${end},${formatTime(e.duration)}`);
+      });
+      const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'wfh-entries.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    });
+  }
+
   // Event listeners
   document.addEventListener('DOMContentLoaded', loadState);
   themeToggleBtn.addEventListener('click', toggleTheme);
+  if (exportBtn) exportBtn.addEventListener('click', exportCSV);
 })();
