@@ -1,6 +1,8 @@
 # WFH Tracker
 
-<img src="logo.svg" alt="WFH Tracker Logo" width="128" height="128" />
+<p align="center">
+  <img src="logo.svg" alt="WFH Tracker Logo" width="128" height="128" />
+</p>
 
 A simple time tracker extension for work-from-home jobs.
 
