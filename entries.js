@@ -46,10 +46,19 @@
 
       const headerTr = document.createElement('tr');
       headerTr.className = 'group-header';
-      const headerTd = document.createElement('td');
-      headerTd.colSpan = 5;
-      headerTd.textContent = `${task} - ${formatTime(total)}`;
-      headerTr.appendChild(headerTd);
+      // Create header cells for each column
+      const taskHeaderTd = document.createElement('td');
+      taskHeaderTd.textContent = task;
+      const durationHeaderTd = document.createElement('td');
+      durationHeaderTd.textContent = formatTime(total);
+      const emptyStartTd = document.createElement('td');
+      const emptyEndTd = document.createElement('td');
+      const emptyActionsTd = document.createElement('td');
+      headerTr.appendChild(taskHeaderTd);
+      headerTr.appendChild(durationHeaderTd);
+      headerTr.appendChild(emptyStartTd);
+      headerTr.appendChild(emptyEndTd);
+      headerTr.appendChild(emptyActionsTd);
       tableBody.appendChild(headerTr);
 
       groupEntries.forEach((entry) => {
